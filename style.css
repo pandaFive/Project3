@@ -1,0 +1,132 @@
+p {
+    margin: 0!important;
+}
+
+.img-size {
+    height: auto;
+    width: 60%;
+}
+
+.h-100 {
+    height: 100%;
+}
+
+.h-a {
+    height: 100%;
+}
+
+.h-65 {
+    height: 65%;
+}
+
+.h-40 {
+    height: 40%;
+}
+
+.h-30 {
+    height: 30%;
+}
+
+.w-100 {
+    width: 100%;
+}
+
+/* font-size */
+.rem1p02 {
+    font-size: 1.02rem;
+}
+
+.rem1p3 {
+    font-size: 1.3rem;
+}
+
+.rem1p5 {
+    font-size: 1.5rem;
+}
+
+.rem2 {
+    font-size: 2rem;
+}
+
+.text-green {
+    color: lightgreen;
+}
+
+/* background */
+.bg-green {
+    background: #4BA3A1;
+}
+
+.bg-blue {
+    background: #1A4567;
+}
+
+.save-box {
+    height: 80px;
+    width: 90px;
+    border: solid 2px white;
+}
+
+/* effect */
+.hover {
+    cursor: pointer;
+}
+
+.hover:hover {
+    opacity: 0.9;
+}
+
+/* specific layout */
+.money-box {
+    margin: 1em 0;
+    border: double 5px white;
+    background: #1A4567;
+    color: white;
+}
+
+.calculation-box {
+    margin: 0.5em 0;
+    padding: 0.5em 0;
+    border: solid 2px white;
+    background: #1A4567;
+    color: white;
+}
+
+ul {
+    list-style: none;
+    text-align: center;
+}
+ul li {
+    display: inline-block;
+    margin: 0 1em;
+}
+ul li button {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    background: none;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    font-size: 0;
+    text-indent: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    outline: none;
+    box-sizing: border-box;
+    transition: .2s ease-in-out;
+}
+ul li button:hover {
+    background: rgba(255, 255, 255, .5);
+}
+ul li button.is-active {
+    background: rgba(255, 255, 255, 1);
+}
+
+.bar-none {
+    scrollbar-width: none; /*Firefox対応のスクロールバー非表示コード*/
+    -ms-overflow-style: none;/*Internet Explore対応のスクロールバー非表示コード*/
+}
+
+.bar-none::-webkit-scrollbar {
+    display: none; /*Google Chrome、Safari、Microsoft Edge対応のスクロールバー非表示コード*/
+}

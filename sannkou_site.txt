@@ -1,0 +1,7 @@
+ドットナビゲーション
+https://www.nxworld.net/css-bullet-navigation-design.html
+https://coco-factory.jp/ugokuweb/move01/6-1-6/
+
+wheelevent
+https://zenn.dev/nus3/articles/a96af766389dfb
+https://gray-code.com/javascript/event-list-of-mouse/
