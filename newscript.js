@@ -25,7 +25,7 @@ class Player {
         this.elapseTime = elapseTime;
         this.cash = cash
 
-        // mapが良いかarrが良いか？順番がある点ではarrが優れる
+        // TODO:mapが良いかarrが良いか？順番がある点ではarrが優れる
         // this.assets = {
         //     FlipMachine: new GameItem("Flip machine", 15000, 500, 1, 25, "https://2.bp.blogspot.com/-ydmVz8cQgiw/WGnPS4aBHVI/AAAAAAABA3M/baZ-lRZ1ViIRIfaQx1sjdSLgXPPZTGZKwCLcB/s800/hamburger_blt_burger.png"),
         //     ETFStock: new GameItem("ETF Stock", 300000, Infinity, 0, 0.001, "https://3.bp.blogspot.com/-ZRt41eX9fdk/VA7mAjFYt4I/AAAAAAAAmJc/yDevfyVymGc/s800/money_stock.png"),
@@ -107,13 +107,16 @@ function updateDisplayedStatus(player){
 
 // gameのplayページを作る関数
 function createPlayPage(player){
+    // gameページのリセット
     config.initialPage.classList.add("d-none");
     config.gamePage.classList.remove(...config.gamePage.classList);
 
+    // gameページの初期設定
     config.gamePage.classList.add("col-12", "p-4", "h-100", "d-flex");
     let container = document.createElement("div");
     container.classList.add("col-12", "d-flex", "h-100");
 
+    // gameページ本文
     container.innerHTML =
     `
         <!-- 左側 -->
@@ -153,25 +156,31 @@ function createPlayPage(player){
             </div>
         </div>
     `
+
+    // 左中央のパネル作る
     const center = container.querySelector(".center-box");
     center.append(createDisplay(1, player));
 
+    // バーガーにクリックで稼ぐ機能を追加
     const burger = container.querySelector(".burger");
-
     burger.addEventListener("click", function(){
         player.cash += player.assets[0].ownedAmount * player.assets[0].effect;
         updateDisplayedStatus(player);
     })
 
+    // displayBox = 左中央のパネル
+    // selectList = 左中央パネルの個々の項目
     const displayBox = container.querySelector(".dis");
+    //個別の選択肢
     const selectList = container.querySelectorAll(".select-box");
-    for(let i = 0; i < selectList.length; i++){
-        let dotNum = container.querySelector(".is-active").innerHTML;
+    //ドットナビゲーションの現在の場所（何ページ目にいるか）
+    let dotNum = container.querySelector(".is-active").innerHTML;
+    for(let i = dotNum*3; i < (dotNum+1)*3 && i < player.assets.length; i++){
         selectList[i].addEventListener("click", function(){
             displayBox.classList.add("d-none");
             displayBox.classList.remove("d-flex");
             // index だけでいいんじゃね？
-            center.append(createPurchase(parseInt(dotNum)-1, i, player));
+            center.append(createPurchase(i, player));
 
         })
     }
@@ -181,12 +190,14 @@ function createPlayPage(player){
 }
 
 // ページ切り替えの方法は考えなければならない
+// 左中央の箱全体を作る関数
 function createDisplay(page, player){
     let container = document.createElement("div");
     container.classList.add("w-100", "d-flex", "justify-content-center", "align-items-center", "flex-column", "h-100", "dis");
     let start = page*3-3;
     let end = page*3;
     console.log(player.name);
+    // 選択できるアイテムのセレクトを縦に三つ並べる処理
     for(let i = start; i < end && i < player.assets.length; i++){
         console.log(i);
         container.append(createSelectBox(i, player));
@@ -205,6 +216,7 @@ function createDisplay(page, player){
     const dotList = container.querySelectorAll(".dot");
     dotList[page-1].classList.add("is-active");
 
+    // ドットリストに機能を追加する処理
     for(let i = 0; i < dotList.length; i++){
         dotList[i].addEventListener("click", function(){
             changeCenterPanel(i+1, player);
@@ -213,7 +225,8 @@ function createDisplay(page, player){
 
     return container;
 }
-// TODO:
+
+// 左中央の個別の選択画面を作る関数
 function createSelectBox(index, player){
     // 各アイテムの箱を作るための関数
     console.log(index);
@@ -242,6 +255,7 @@ function createSelectBox(index, player){
     return container;
 }
 
+// 左真ん中のパネルを選択画面に戻す関数
 function changeCenterPanel(page, player){
     const center = config.gamePage.querySelector("dis");
     center.querySelector(".dis").innerHTML = "";
@@ -267,13 +281,18 @@ function changeCenterPanel(page, player){
     }
 }
 
-// indexだけでいいんじゃね？
-function createPurchase(page, index, player){
-    const item = display[page][index];
+// 購入画面を作る関数
+function createPurchase(index, player){
+    //購入品の格納
+    const item = player.assets[index];
+
+    //購入が目の単位
     let unit = "second";
-    if(page == 0 && index == 0) unit = "click";
+    if(index == 0) unit = "click";
+
+    //アイテムの効果を格納
     let addNumber = item.effect;
-    if(page == 0 && (index == 1 || index == 2)) addNumber = item.effect * item.price;
+    if(index == 1 || index == 2) addNumber = item.effect * item.price;
 
 
     let container = document.createElement("div");
@@ -305,13 +324,49 @@ function createPurchase(page, index, player){
             </div>
         </div>
     `
+
+    // 左側中央のパネル
     let displayWindow = config.gamePage.querySelector(".dis");
+
+    //戻るボタンの効果作成 何もせずに戻る
     container.querySelector(".back-btn").addEventListener("click", function(){
         returnDis(container, displayWindow);
     })
+
+    //購入ボタン 入力した数値を元に購入処理が行われる
     container.querySelector(".pur-btn").addEventListener("click", function(){
         purchaseItem(item, container, displayWindow, player);
     })
 
     return container;
+}
+
+//戻るボタンの動作
+function returnDis(curr, backPage){
+    displayNone(curr);
+    displayBlock(backPage);
+    curr.innerHTML = ""
+    backPage.classList.add("d-flex");
+}
+
+
+//購入ボタンの動作
+//TODO:indexとplayerがあれば処理を実装できそう、つまりこんなに引数はいらないのでは？
+function purchaseItem(item, curr, backPage, player){
+    let quantity = parseInt(curr.querySelector(".quant").value);
+
+    //現在のcashと比較して購入可能かを判定する、そのうえで不可能ならばポップアップで警告する
+    if(canBuy(item, quantity, player) == false){
+        alert("cashが不足しています。購入個数を入れなおしてください。");
+        return;
+    }
+
+    cost = changeItem(item, quantity, player);
+    player.assets -= cost;
+    returnDis(curr, backPage);
+}
+
+function canBuy(item, quantity, person){
+    if (item.price*quantity > person.cash) false;
+    return true;
 }
