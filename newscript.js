@@ -6,6 +6,14 @@ const config = {
     startBtn: document.getElementById("startBtn"),
 }
 
+function displayNone(ele){
+    ele.classList.remove("d-block", "d-flex");
+    ele.classList.add("d-none");
+}
+
+function displayBlock(ele){
+    ele.classList.remove("d-none");
+}
 
 class GameItem {
     constructor(name, price, max, ownedAmount, effect, imgUrl){
@@ -179,7 +187,7 @@ function createPlayPage(player){
         selectList[i].addEventListener("click", function(){
             displayBox.classList.add("d-none");
             displayBox.classList.remove("d-flex");
-            // index だけでいいんじゃね？
+            // 購入画面へ飛ぶ昨日の実装
             center.append(createPurchase(i, player));
 
         })
@@ -283,9 +291,8 @@ function changeCenterPanel(page, player){
 
 // 購入画面を作る関数
 function createPurchase(index, player){
-    //購入品の格納
+    // 購入するアイテムの格納
     const item = player.assets[index];
-
     //購入が目の単位
     let unit = "second";
     if(index == 0) unit = "click";
@@ -311,7 +318,7 @@ function createPurchase(index, player){
         <div class="col-12 text-white mt-3 h-30">
             <h3 class="col-12">How Many would you like to purchase?</h3>
             <div class="col-12">
-                <input type="number" class="col-12 form-control text-right quant" placeholder="0">
+                <input type="number" class="col-12 form-control text-right quant" placeholder="1" value="1" min="1">
             </div>
             <p class="text-right rem1p3 mt-2 mx-3">Total : ¥${item.price.toLocaleString()}</p>
         </div>
@@ -335,6 +342,7 @@ function createPurchase(index, player){
 
     //購入ボタン 入力した数値を元に購入処理が行われる
     container.querySelector(".pur-btn").addEventListener("click", function(){
+        console.log("check");
         purchaseItem(item, container, displayWindow, player);
     })
 
@@ -352,6 +360,7 @@ function returnDis(curr, backPage){
 
 //購入ボタンの動作
 //TODO:indexとplayerがあれば処理を実装できそう、つまりこんなに引数はいらないのでは？
+//TODO:購入後表示されているアイテムの所持数を変更する処理を追加する必要がある。
 function purchaseItem(item, curr, backPage, player){
     let quantity = parseInt(curr.querySelector(".quant").value);
 
@@ -361,12 +370,32 @@ function purchaseItem(item, curr, backPage, player){
         return;
     }
 
-    cost = changeItem(item, quantity, player);
-    player.assets -= cost;
+    let cost = changeItem(item, quantity, player);
+    player.cash -= cost;
     returnDis(curr, backPage);
 }
 
 function canBuy(item, quantity, person){
-    if (item.price*quantity > person.cash) false;
+    if (item.price*quantity > person.cash) return false;
     return true;
+}
+
+function changeItem(item, addNumber, player){
+    console.log(item.ownedAmount);
+    console.log("check1");
+    if(item.price*addNumber > player.assets){
+        addNumber = Math.floor((player.assets/item.price));
+    }
+    if(item.ownedAmount + addNumber >= item.max){
+        let cost = item.price * item.max - item.ownedAmount;
+        item.ownedAmount = item.max;
+        return cost;
+    }
+    else{
+        let cost = item.price * addNumber;
+        item.ownedAmount = item.ownedAmount+addNumber;
+        console.log(item.ownedAmount);
+        console.log("check2");
+        return cost;
+    }
 }
