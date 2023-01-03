@@ -48,17 +48,17 @@ class Player {
         //     BulletSpeedSkyRailway: new GameItem("Bullet-Speed Sky Railway", 10000000000000, 1, 0, 30000000000, "https://cdn.pixabay.com/photo/2018/11/30/03/35/bullet-train-3846965_960_720.jpg")
         // }
         this.assets = [
-            new GameItem("Flip machine", 15000, 500, 1, 25, "https://2.bp.blogspot.com/-ydmVz8cQgiw/WGnPS4aBHVI/AAAAAAABA3M/baZ-lRZ1ViIRIfaQx1sjdSLgXPPZTGZKwCLcB/s800/hamburger_blt_burger.png"),
-            new GameItem("ETF Stock", 300000, Infinity, 0, 0.001, "https://3.bp.blogspot.com/-ZRt41eX9fdk/VA7mAjFYt4I/AAAAAAAAmJc/yDevfyVymGc/s800/money_stock.png"),
-            new GameItem("ETF Bonds", 300000, Infinity, 0, 0.0007, "https://1.bp.blogspot.com/-SlXHptXp-Hg/U8Xkf0VeAVI/AAAAAAAAiyA/n9d4fdHDmJk/s800/money_saiken.png"),
-            new GameItem("Lemonade Stand", 30000, 1000, 0, 30, "https://1.bp.blogspot.com/-tzP9gGYpFP8/XVjgHkZ40UI/AAAAAAABUMU/zQeTzUi4MjMRSXxZBI3cOqDYXwiAQhe1wCLcBGAs/s1600/drink_lemonade.png"),
-            new GameItem("Ice Cream Truck", 100000, 500, 0, 120, "https://2.bp.blogspot.com/-IDJ-PAml6xI/UvTd5BRmybI/AAAAAAAAdf8/qkKtOM235yw/s800/job_icecream_ya.png"),
-            new GameItem("House", 20000000, 100, 0, 32000, "https://cdn.pixabay.com/photo/2016/11/18/17/46/house-1836070_960_720.jpg"),
-            new GameItem("Town House", 40000000, 100, 0, 64000, "https://cdn.pixabay.com/photo/2014/07/10/17/18/large-home-389271_960_720.jpg"),
-            new GameItem("Mansion", 250000000, 20, 0, 50000, "https://cdn.pixabay.com/photo/2018/05/26/14/46/manor-house-3431460_960_720.jpg"),
-            new GameItem("Industrial Space", 1000000000, 10, 0, 2200000, "https://cdn.pixabay.com/photo/2018/04/05/20/14/travel-3294009_960_720.jpg"),
-            new GameItem("Hotel Skyscraper", 10000000000, 5, 0, 25000000, "https://cdn.pixabay.com/photo/2012/02/21/07/27/al-abrar-mecca-15081_960_720.jpg"),
-            new GameItem("Bullet-Speed Sky Railway", 10000000000000, 1, 0, 30000000000, "https://cdn.pixabay.com/photo/2018/11/30/03/35/bullet-train-3846965_960_720.jpg")
+            new GameItem("Flip machine", 15000, 500, 1, 25, "/img/burger.png"),
+            new GameItem("ETF Stock", 300000, Infinity, 0, 0.001, "/img/stock.png"),
+            new GameItem("ETF Bonds", 300000, Infinity, 0, 0.0007, "/img/bonds.png"),
+            new GameItem("Lemonade Stand", 30000, 1000, 0, 30, "/img/lemonade.png"),
+            new GameItem("Ice Cream Truck", 100000, 500, 0, 120, "/img/icecream.png"),
+            new GameItem("House", 20000000, 100, 0, 32000, "/img/house.jpg"),
+            new GameItem("Town House", 40000000, 100, 0, 64000, "/img/townHouse.jpg"),
+            new GameItem("Mansion", 250000000, 20, 0, 50000, "/img/mansion.jpg"),
+            new GameItem("Industrial Space", 1000000000, 10, 0, 2200000, "/img/industrialSpace.jpg"),
+            new GameItem("Hotel Skyscraper", 10000000000, 5, 0, 25000000, "/img/hotel.jpg"),
+            new GameItem("Bullet-Speed Sky Railway", 10000000000000, 1, 0, 30000000000, "/img/bullet-train-railway.jpg")
         ]
 
     }
@@ -133,7 +133,7 @@ function createPlayPage(player){
                 <p class="rem2">Burgers</p>
                 <p class="rem1p5 burger-num">1</p>
             </div>
-            <img id="burger" src="https://2.bp.blogspot.com/-ydmVz8cQgiw/WGnPS4aBHVI/AAAAAAABA3M/baZ-lRZ1ViIRIfaQx1sjdSLgXPPZTGZKwCLcB/s800/hamburger_blt_burger.png" class="img-size m-4 pb-5 burger">
+            <img id="burger" src="/img/burger.png" class="img-size m-4 pb-5 burger">
         </div>
 
         <!-- 右側 -->
