@@ -3,8 +3,21 @@ const config = {
     initialPage: document.getElementById("initial-form"),
     name: document.getElementById("player-name"),
     gamePage: document.getElementById("game-page"),
-    startBtn: document.getElementById("startBtn"),
+    startBtn: document.getElementById("form"),
+    dot: `
+            <!-- ドットナビゲーション -->
+            <ul class="mt-2 mb-0 pb-0">
+                <li><button class="dot">0</button></li>
+                <li><button class="dot">1</button></li>
+                <li><button class="dot">2</button></li>
+                <li><button class="dot">3</button></li>
+            </ul>
+        `,
 }
+
+document.getElementById("startBtn").addEventListener("click", function(){
+    playStart();
+})
 
 function displayNone(ele){
     ele.classList.remove("d-block", "d-flex");
@@ -87,7 +100,6 @@ function playStart(){
         1,
         50000,
     );
-    console.log(player.assets[0].name);
     config.initialPage.classList.add("d-none");
     config.gamePage.append(createPlayPage(player));
     timeElapse(player);
@@ -101,7 +113,6 @@ function timeElapse(player){
         player.age = Math.floor(20 + player.elapseTime / 365);
         player.addCash();
         updateDisplayedStatus(player); // 画面実装してから有効化必須
-        console.log(player.cash);
     }, 1000)
 }
 
@@ -183,15 +194,22 @@ function createPlayPage(player){
     const selectList = container.querySelectorAll(".select-box");
     //ドットナビゲーションの現在の場所（何ページ目にいるか）
     let dotNum = container.querySelector(".is-active").innerHTML;
+    console.log(dotNum)
     for(let i = dotNum*3; i < (dotNum+1)*3 && i < player.assets.length; i++){
         selectList[i].addEventListener("click", function(){
-            displayBox.classList.add("d-none");
-            displayBox.classList.remove("d-flex");
-            // 購入画面へ飛ぶ昨日の実装
+            center.innerHTML = "";
             center.append(createPurchase(i, player));
 
         })
     }
+
+    let dotList = container.querySelectorAll(".dot");
+    for(let i = 0; i < dotList.length; i++){
+        dotList[i].addEventListener("click", function(){
+            changeCenterPanel(i+1, player);
+        })
+    }
+
 
 
     return container;
@@ -200,36 +218,21 @@ function createPlayPage(player){
 // ページ切り替えの方法は考えなければならない
 // 左中央の箱全体を作る関数
 function createDisplay(page, player){
+    //TODO:ココより下で選択の機能を実装しないといけない。
     let container = document.createElement("div");
     container.classList.add("w-100", "d-flex", "justify-content-center", "align-items-center", "flex-column", "h-100", "dis");
     let start = page*3-3;
     let end = page*3;
-    console.log(player.name);
     // 選択できるアイテムのセレクトを縦に三つ並べる処理
     for(let i = start; i < end && i < player.assets.length; i++){
-        console.log(i);
         container.append(createSelectBox(i, player));
     }
 
-    container.innerHTML +=
-    `
-        <!-- ドットナビゲーション -->
-        <ul class="mt-2 mb-0 pb-0">
-            <li><button class="dot">0</button></li>
-            <li><button class="dot">1</button></li>
-            <li><button class="dot">2</button></li>
-            <li><button class="dot">3</button></li>
-        </ul>
-    `
+    //ドットナビゲーション
+    container.innerHTML += config.dot;
+
     const dotList = container.querySelectorAll(".dot");
     dotList[page-1].classList.add("is-active");
-
-    // ドットリストに機能を追加する処理
-    for(let i = 0; i < dotList.length; i++){
-        dotList[i].addEventListener("click", function(){
-            changeCenterPanel(i+1, player);
-        })
-    }
 
     return container;
 }
@@ -237,10 +240,8 @@ function createDisplay(page, player){
 // 左中央の個別の選択画面を作る関数
 function createSelectBox(index, player){
     // 各アイテムの箱を作るための関数
-    console.log(index);
     let item = player.assets[index]
     let unit = "click"? index == 0: "sec";
-    console.log(item);
     let addEffect = item.effect;
     if(index == 1 || index == 2) addEffect = item.effect*item.price;
     let container = document.createElement("div");
@@ -259,28 +260,25 @@ function createSelectBox(index, player){
         <div class="col-2 text-center text-white d-flex align-items-center justify-content-center">
             <p class="rem2">${item.ownedAmount}</p>
         </div>
-        `
+    `
     return container;
 }
 
-// 左真ん中のパネルを選択画面に戻す関数
+// 左真ん中のパネルをドットナビゲーションに従って変更する関数
 function changeCenterPanel(page, player){
-    const center = config.gamePage.querySelector("dis");
-    center.querySelector(".dis").innerHTML = "";
-    center.append(createSelectBox(page, player));
+    const center = config.gamePage.querySelector(".dis");
+    center.innerHTML = "";
+    let start = (page-1)*3;
+    let end = page*3;
+    for(let i = start; i < end && i < player.assets.length; i++){
+        center.append(createSelectBox(i, player));
+    }
 
-    center.innerHTML +=
-    `
-        <!-- ドットナビゲーション -->
-        <ul class="mt-2 mb-0 pb-0">
-            <li><button class="dot">1</button></li>
-            <li><button class="dot">2</button></li>
-            <li><button class="dot">3</button></li>
-            <li><button class="dot">4</button></li>
-        </ul>
-    `
+    //ドットナビゲーション
+    center.innerHTML += config.dot;
+
     const dotList = center.querySelectorAll(".dot");
-    dotList[page].classList.add("is-active");
+    dotList[page-1].classList.add("is-active");
 
     for(let i = 0; i < dotList.length; i++){
         dotList[i].addEventListener("click", function(){
@@ -335,34 +333,52 @@ function createPurchase(index, player){
     // 左側中央のパネル
     let displayWindow = config.gamePage.querySelector(".dis");
 
+    let page = 1;
+
+    for (let i = 1; i < 4; i++){
+        if (index < i * 3){
+            page = i;
+            break;
+        }
+    }
+
     //戻るボタンの効果作成 何もせずに戻る
     container.querySelector(".back-btn").addEventListener("click", function(){
-        returnDis(container, displayWindow);
+        purchaseAndBackBtn(page, player);
     })
 
     //購入ボタン 入力した数値を元に購入処理が行われる
     container.querySelector(".pur-btn").addEventListener("click", function(){
-        console.log("check");
-        purchaseItem(item, container, displayWindow, player);
+        purchaseItem(item, player, page);
     })
 
     return container;
 }
 
 //戻るボタンの動作
-function returnDis(curr, backPage){
-    displayNone(curr);
-    displayBlock(backPage);
-    curr.innerHTML = ""
-    backPage.classList.add("d-flex");
+function purchaseAndBackBtn(page, player){
+    let center = config.gamePage.querySelector(".center-box");
+    //購入画面の消去
+    center.innerHTML = "";
+
+    //選択画面のappend
+    center.append(createDisplay(page, player))
+
+
+    const selectList = center.querySelectorAll(".select-box");
+    for(let i = page; i < (page+1)*3 && i < player.assets.length; i++){
+        selectList[i-page].addEventListener("click", function(){//動いてるのにerrorが出るので何とかしたい
+            console.log("check")
+            center.innerHTML = "";
+            center.append(createPurchase(i-1, player));
+        })
+    }
 }
 
 
 //購入ボタンの動作
-//TODO:indexとplayerがあれば処理を実装できそう、つまりこんなに引数はいらないのでは？
-//TODO:購入後表示されているアイテムの所持数を変更する処理を追加する必要がある。
-function purchaseItem(item, curr, backPage, player){
-    let quantity = parseInt(curr.querySelector(".quant").value);
+function purchaseItem(item, player, page){
+    let quantity = parseInt(config.gamePage.querySelector(".quant").value);
 
     //現在のcashと比較して購入可能かを判定する、そのうえで不可能ならばポップアップで警告する
     if(canBuy(item, quantity, player) == false){
@@ -372,17 +388,17 @@ function purchaseItem(item, curr, backPage, player){
 
     let cost = changeItem(item, quantity, player);
     player.cash -= cost;
-    returnDis(curr, backPage);
+    purchaseAndBackBtn(page, player);
 }
 
+//現在のcashと購入品×一つ当たりのcostを比較して購入できるか返す
 function canBuy(item, quantity, person){
     if (item.price*quantity > person.cash) return false;
     return true;
 }
 
+
 function changeItem(item, addNumber, player){
-    console.log(item.ownedAmount);
-    console.log("check1");
     if(item.price*addNumber > player.assets){
         addNumber = Math.floor((player.assets/item.price));
     }
@@ -394,8 +410,9 @@ function changeItem(item, addNumber, player){
     else{
         let cost = item.price * addNumber;
         item.ownedAmount = item.ownedAmount+addNumber;
-        console.log(item.ownedAmount);
-        console.log("check2");
         return cost;
     }
 }
+
+// TODO:ドットナビゲーションは大方完成。
+//ただしドットナビゲーションを使って移動したセレクタから購入ができない→イベントリスナーが働いていないこれを解決する
