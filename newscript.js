@@ -46,20 +46,6 @@ class Player {
         this.elapseTime = elapseTime;
         this.cash = cash
 
-        // TODO:mapが良いかarrが良いか？順番がある点ではarrが優れる
-        // this.assets = {
-        //     FlipMachine: new GameItem("Flip machine", 15000, 500, 1, 25, "https://2.bp.blogspot.com/-ydmVz8cQgiw/WGnPS4aBHVI/AAAAAAABA3M/baZ-lRZ1ViIRIfaQx1sjdSLgXPPZTGZKwCLcB/s800/hamburger_blt_burger.png"),
-        //     ETFStock: new GameItem("ETF Stock", 300000, Infinity, 0, 0.001, "https://3.bp.blogspot.com/-ZRt41eX9fdk/VA7mAjFYt4I/AAAAAAAAmJc/yDevfyVymGc/s800/money_stock.png"),
-        //     ETFBonds: new GameItem("ETF Bonds", 300000, Infinity, 0, 0.0007, "https://1.bp.blogspot.com/-SlXHptXp-Hg/U8Xkf0VeAVI/AAAAAAAAiyA/n9d4fdHDmJk/s800/money_saiken.png"),
-        //     LemonadeStand: new GameItem("Lemonade Stand", 30000, 1000, 0, 30, "https://1.bp.blogspot.com/-tzP9gGYpFP8/XVjgHkZ40UI/AAAAAAABUMU/zQeTzUi4MjMRSXxZBI3cOqDYXwiAQhe1wCLcBGAs/s1600/drink_lemonade.png"),
-        //     IceCreamTruck: new GameItem("Ice Cream Truck", 100000, 500, 0, 120, "https://2.bp.blogspot.com/-IDJ-PAml6xI/UvTd5BRmybI/AAAAAAAAdf8/qkKtOM235yw/s800/job_icecream_ya.png"),
-        //     House: new GameItem("House", 20000000, 100, 0, 32000, "https://cdn.pixabay.com/photo/2016/11/18/17/46/house-1836070_960_720.jpg"),
-        //     TownHouse: new GameItem("Town House", 40000000, 100, 0, 64000, "https://cdn.pixabay.com/photo/2014/07/10/17/18/large-home-389271_960_720.jpg"),
-        //     Mansion: new GameItem("Mansion", 250000000, 20, 0, 50000, "https://cdn.pixabay.com/photo/2018/05/26/14/46/manor-house-3431460_960_720.jpg"),
-        //     IndustrialSpace: new GameItem("Industrial Space", 1000000000, 10, 0, 2200000, "https://cdn.pixabay.com/photo/2018/04/05/20/14/travel-3294009_960_720.jpg"),
-        //     HotelSkyscraper: new GameItem("Hotel Skyscraper", 10000000000, 5, 0, 25000000, "https://cdn.pixabay.com/photo/2012/02/21/07/27/al-abrar-mecca-15081_960_720.jpg"),
-        //     BulletSpeedSkyRailway: new GameItem("Bullet-Speed Sky Railway", 10000000000000, 1, 0, 30000000000, "https://cdn.pixabay.com/photo/2018/11/30/03/35/bullet-train-3846965_960_720.jpg")
-        // }
         this.assets = [
             new GameItem("Flip machine", 15000, 500, 1, 25, "/img/burger.png"),
             new GameItem("ETF Stock", 300000, Infinity, 0, 0.001, "/img/stock.png"),
@@ -112,7 +98,7 @@ function timeElapse(player){
         player.elapseTime += 1;
         player.age = Math.floor(20 + player.elapseTime / 365);
         player.addCash();
-        updateDisplayedStatus(player); // 画面実装してから有効化必須
+        updateDisplayedStatus(player);
     }, 1000)
 }
 
@@ -178,7 +164,7 @@ function createPlayPage(player){
 
     // 左中央のパネル作る
     const center = container.querySelector(".center-box");
-    center.append(createDisplay(1, player));
+    center.append(createDisplay(0, player));
 
     // バーガーにクリックで稼ぐ機能を追加
     const burger = container.querySelector(".burger");
@@ -194,35 +180,36 @@ function createPlayPage(player){
     const selectList = container.querySelectorAll(".select-box");
     //ドットナビゲーションの現在の場所（何ページ目にいるか）
     let dotNum = container.querySelector(".is-active").innerHTML;
-    console.log(dotNum)
+
+    //TODO:セレクタの機能追加  ここは関数を使わない
     for(let i = dotNum*3; i < (dotNum+1)*3 && i < player.assets.length; i++){
         selectList[i].addEventListener("click", function(){
             center.innerHTML = "";
             center.append(createPurchase(i, player));
-
+            let quant = center.querySelector(".quant");
+            let total = center.querySelector(".total");
+            quant.addEventListener("change", function(){
+                total.innerHTML = `Total : ¥${(player.assets[i].price*quant.value).toLocaleString()}`
+            })
         })
     }
 
     let dotList = container.querySelectorAll(".dot");
     for(let i = 0; i < dotList.length; i++){
         dotList[i].addEventListener("click", function(){
-            changeCenterPanel(i+1, player);
+            changeCenterPanel(i, player);
         })
     }
-
-
 
     return container;
 }
 
-// ページ切り替えの方法は考えなければならない
 // 左中央の箱全体を作る関数
 function createDisplay(page, player){
-    //TODO:ココより下で選択の機能を実装しないといけない。
     let container = document.createElement("div");
     container.classList.add("w-100", "d-flex", "justify-content-center", "align-items-center", "flex-column", "h-100", "dis");
-    let start = page*3-3;
-    let end = page*3;
+    let start = page*3;
+    let end = (page+1)*3;
     // 選択できるアイテムのセレクトを縦に三つ並べる処理
     for(let i = start; i < end && i < player.assets.length; i++){
         container.append(createSelectBox(i, player));
@@ -232,7 +219,7 @@ function createDisplay(page, player){
     container.innerHTML += config.dot;
 
     const dotList = container.querySelectorAll(".dot");
-    dotList[page-1].classList.add("is-active");
+    dotList[page].classList.add("is-active");
 
     return container;
 }
@@ -241,7 +228,7 @@ function createDisplay(page, player){
 function createSelectBox(index, player){
     // 各アイテムの箱を作るための関数
     let item = player.assets[index]
-    let unit = "click"? index == 0: "sec";
+    let unit = index == 0?"click": "sec";
     let addEffect = item.effect;
     if(index == 1 || index == 2) addEffect = item.effect*item.price;
     let container = document.createElement("div");
@@ -268,8 +255,8 @@ function createSelectBox(index, player){
 function changeCenterPanel(page, player){
     const center = config.gamePage.querySelector(".dis");
     center.innerHTML = "";
-    let start = (page-1)*3;
-    let end = page*3;
+    let start = page*3;
+    let end = (page+1)*3;
     for(let i = start; i < end && i < player.assets.length; i++){
         center.append(createSelectBox(i, player));
     }
@@ -278,25 +265,28 @@ function changeCenterPanel(page, player){
     center.innerHTML += config.dot;
 
     const dotList = center.querySelectorAll(".dot");
-    dotList[page-1].classList.add("is-active");
+    dotList[page].classList.add("is-active");
 
     for(let i = 0; i < dotList.length; i++){
         dotList[i].addEventListener("click", function(){
-            changeCenterPanel(i+1, player);
+            changeCenterPanel(i, player);
         })
     }
+
+    //セレクタの機能追加
+    selectWork(page, player);
 }
 
 // 購入画面を作る関数
 function createPurchase(index, player){
     // 購入するアイテムの格納
     const item = player.assets[index];
-    //購入が目の単位
+    //購入項目の単位
     let unit = "second";
     if(index == 0) unit = "click";
 
     //アイテムの効果を格納
-    let addNumber = item.effect;
+    let addNumber = item.effect;//effectが存在しないらしいは？
     if(index == 1 || index == 2) addNumber = item.effect * item.price;
 
 
@@ -318,7 +308,7 @@ function createPurchase(index, player){
             <div class="col-12">
                 <input type="number" class="col-12 form-control text-right quant" placeholder="1" value="1" min="1">
             </div>
-            <p class="text-right rem1p3 mt-2 mx-3">Total : ¥${item.price.toLocaleString()}</p>
+            <p class="text-right rem1p3 mt-2 mx-3 total">Total : ¥${item.price.toLocaleString()}</p>
         </div>
         <div class="col-12 d-flex justify-content-between align-items-center h-30 pb-1">
             <div class="col-6">
@@ -329,19 +319,17 @@ function createPurchase(index, player){
             </div>
         </div>
     `
-
     // 左側中央のパネル
     let displayWindow = config.gamePage.querySelector(".dis");
 
-    let page = 1;
-
-    for (let i = 1; i < 4; i++){
+    let page = 0;
+    //pageを求める処理
+    for (let i = 1; i <= 4; i++){
         if (index < i * 3){
-            page = i;
+            page = i-1;
             break;
         }
     }
-
     //戻るボタンの効果作成 何もせずに戻る
     container.querySelector(".back-btn").addEventListener("click", function(){
         purchaseAndBackBtn(page, player);
@@ -351,7 +339,6 @@ function createPurchase(index, player){
     container.querySelector(".pur-btn").addEventListener("click", function(){
         purchaseItem(item, player, page);
     })
-
     return container;
 }
 
@@ -364,15 +351,10 @@ function purchaseAndBackBtn(page, player){
     //選択画面のappend
     center.append(createDisplay(page, player))
 
+    changeCenterPanel(page, player);
 
-    const selectList = center.querySelectorAll(".select-box");
-    for(let i = page; i < (page+1)*3 && i < player.assets.length; i++){
-        selectList[i-page].addEventListener("click", function(){//動いてるのにerrorが出るので何とかしたい
-            console.log("check")
-            center.innerHTML = "";
-            center.append(createPurchase(i-1, player));
-        })
-    }
+    //セレクタの機能追加
+    selectWork(page, player);
 }
 
 
@@ -392,6 +374,7 @@ function purchaseItem(item, player, page){
 }
 
 //現在のcashと購入品×一つ当たりのcostを比較して購入できるか返す
+//TODO:stockとbondsの時は処理の下かを変える必要がある。
 function canBuy(item, quantity, person){
     if (item.price*quantity > person.cash) return false;
     return true;
@@ -414,5 +397,23 @@ function changeItem(item, addNumber, player){
     }
 }
 
-// TODO:ドットナビゲーションは大方完成。
-//ただしドットナビゲーションを使って移動したセレクタから購入ができない→イベントリスナーが働いていないこれを解決する
+//セレクタの機能追加をする関数
+function selectWork(page, player){
+    const center = config.gamePage.querySelector(".center-box");
+    const selectList = center.querySelectorAll(".select-box");
+
+    for(let i = 0; i < selectList.length; i++){
+        selectList[i].addEventListener("click", function(){
+            center.innerHTML = "";
+            center.append(createPurchase(i+page*3, player));
+            let quant = center.querySelector(".quant");
+            let total = center.querySelector(".total");
+            quant.addEventListener("change", function(){
+                total.innerHTML = `Total : ¥${(player.assets[i+page*3].price*quant.value).toLocaleString()}`
+            })
+        })
+    }
+}
+
+//TODO:stockとbondsの値段表示だけはいじらないといけないかもしれない
+//TODO:save木のを付けたら終了終わり
