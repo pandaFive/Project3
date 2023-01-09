@@ -173,9 +173,7 @@ function createPlayPage(player){
         updateDisplayedStatus(player);
     })
 
-    // displayBox = 左中央のパネル
     // selectList = 左中央パネルの個々の項目
-    const displayBox = container.querySelector(".dis");
     //個別の選択肢
     const selectList = container.querySelectorAll(".select-box");
     //ドットナビゲーションの現在の場所（何ページ目にいるか）
@@ -189,7 +187,7 @@ function createPlayPage(player){
             let quant = center.querySelector(".quant");
             let total = center.querySelector(".total");
             quant.addEventListener("change", function(){
-                total.innerHTML = `Total : ¥${(player.assets[i].price*quant.value).toLocaleString()}`
+                total.innerHTML = `Total : ¥${(calculator(player.assets[i], quant.value)).toLocaleString()}`
             })
         })
     }
@@ -375,23 +373,36 @@ function purchaseItem(item, player, page){
 
 //現在のcashと購入品×一つ当たりのcostを比較して購入できるか返す
 //TODO:stockとbondsの時は処理の下かを変える必要がある。
-function canBuy(item, quantity, person){
-    if (item.price*quantity > person.cash) return false;
+function canBuy(item, quantity, player){
+    if (calculator(item, quantity) > player.cash) return false;
     return true;
 }
 
 
 function changeItem(item, addNumber, player){
-    if(item.price*addNumber > player.assets){
-        addNumber = Math.floor((player.assets/item.price));
+    //購入する商品の値段が現在所持している現金より多いかの比較多い場合は購入個数が減る
+    if(calculator(item, addNumber) > player.cash){
+        //stockだけは計算が異なる
+        if (item.name == "ETF Stock"){
+            for(let i = addNumber; i >= 0; i--){
+                if (calculator(item, i) <= player.cash){
+                    addNumber = i;
+                    break;
+                }
+            }
+        }
+        else addNumber = Math.floor((player.cash/item.price));
     }
+
+    //アイテムの所持上限に達しているときの処理
     if(item.ownedAmount + addNumber >= item.max){
-        let cost = item.price * item.max - item.ownedAmount;
+        let cost = calculator(item, item.max - item.ownedAmount);
         item.ownedAmount = item.max;
         return cost;
     }
+    //所持上限に達していないときの処理
     else{
-        let cost = item.price * addNumber;
+        let cost = calculator(item, addNumber);
         item.ownedAmount = item.ownedAmount+addNumber;
         return cost;
     }
@@ -413,6 +424,18 @@ function selectWork(page, player){
             })
         })
     }
+}
+
+function calculator(item, quantity){
+    let res = 0;
+    if (item.name == "ETF Stock"){
+        res += item.price;
+        res += item.price*Math.pow(1.1, quantity-1);
+    }
+    else{
+        res = item.price*quantity;
+    }
+    return res;
 }
 
 //TODO:stockとbondsの値段表示だけはいじらないといけないかもしれない
