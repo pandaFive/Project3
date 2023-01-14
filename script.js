@@ -1,8 +1,23 @@
-// page作成変更関連を作り直す色々ぐちゃぐちゃになっている
-// どうにも整理しずらいデバッグがくそ面倒
-// 目的ごとにしっかり分ける
-// 関数を管理する
+const config = {
+    target: document.getElementById("target"),
+    initialPage: document.getElementById("initial-form"),
+    name: document.getElementById("player-name"),
+    gamePage: document.getElementById("game-page"),
+    startBtn: document.getElementById("form"),
+    dot: `
+            <!-- ドットナビゲーション -->
+            <ul class="mt-2 mb-0 pb-0">
+                <li><button class="dot">0</button></li>
+                <li><button class="dot">1</button></li>
+                <li><button class="dot">2</button></li>
+                <li><button class="dot">3</button></li>
+            </ul>
+        `,
+}
 
+document.getElementById("startBtn").addEventListener("click", function(){
+    playStart();
+})
 
 function displayNone(ele){
     ele.classList.remove("d-block", "d-flex");
@@ -12,14 +27,6 @@ function displayNone(ele){
 function displayBlock(ele){
     ele.classList.remove("d-none");
 }
-
-const config = {
-    target: document.getElementById("target"),
-    initialPage: document.getElementById("initial-form"),
-    name: document.getElementById("player-name"),
-    gamePage: document.getElementById("game-page"),
-}
-
 
 class GameItem {
     constructor(name, price, max, ownedAmount, effect, imgUrl){
@@ -33,104 +40,88 @@ class GameItem {
 }
 
 class Player {
-    constructor(name, age, elapseTime, assets){
+    constructor(name, age, elapseTime, cash, assets = []){
         this.name = name;
         this.age = age;
         this.elapseTime = elapseTime;
-        this.assets = assets;
+        this.cash = cash
+
+        this.assets = [
+            new GameItem("Flip machine", 15000, 500, 1, 25, "/img/burger.png"),
+            new GameItem("ETF Stock", 300000, Infinity, 0, 0.001, "/img/stock.png"),
+            new GameItem("ETF Bonds", 300000, Infinity, 0, 0.0007, "/img/bonds.png"),
+            new GameItem("Lemonade Stand", 30000, 1000, 0, 30, "/img/lemonade.png"),
+            new GameItem("Ice Cream Truck", 100000, 500, 0, 120, "/img/icecream.png"),
+            new GameItem("House", 20000000, 100, 0, 32000, "/img/house.jpg"),
+            new GameItem("Town House", 40000000, 100, 0, 64000, "/img/townHouse.jpg"),
+            new GameItem("Mansion", 250000000, 20, 0, 50000, "/img/mansion.jpg"),
+            new GameItem("Industrial Space", 1000000000, 10, 0, 2200000, "/img/industrialSpace.jpg"),
+            new GameItem("Hotel Skyscraper", 10000000000, 5, 0, 25000000, "/img/hotel.jpg"),
+            new GameItem("Bullet-Speed Sky Railway", 10000000000000, 1, 0, 30000000000, "/img/bullet-train-railway.jpg")
+        ]
+
+    }
+
+    addCash(){
+        let lemonade = this.assets[3].ownedAmount * this.assets[3].effect;
+        let ice = this.assets[4].ownedAmount * this.assets[4].effect;
+        let house = this.assets[5].ownedAmount * this.assets[5].effect;
+        let town = this.assets[6].ownedAmount * this.assets[6].effect;
+        let mansion = this.assets[7].ownedAmount * this.assets[7].effect;
+        let industrial = this.assets[8].ownedAmount * this.assets[8].effect;
+        let hotel = this.assets[9].ownedAmount * this.assets[9].effect;
+        let railway = this.assets[10].ownedAmount * this.assets[10].effect;
+        let bonds = Math.floor(this.assets[1].ownedAmount * this.assets[1].effect);
+        let stocks = Math.floor(this.assets[2].ownedAmount * this.assets[2].effect);
+
+        this.cash += lemonade + ice + house + town + mansion + industrial + hotel + railway + bonds + stocks;
     }
 }
 
-// effectについては用検討する必要がある。取り敢えず今は種別を区別せず数字を格納する。
-let items = {
-    FlipMachine: new GameItem("Flip machine", 15000, 500, 1, 25, "https://2.bp.blogspot.com/-ydmVz8cQgiw/WGnPS4aBHVI/AAAAAAABA3M/baZ-lRZ1ViIRIfaQx1sjdSLgXPPZTGZKwCLcB/s800/hamburger_blt_burger.png"),
-    ETFStock: new GameItem("ETF Stock", 300000, Infinity, 0, 0.001, "https://3.bp.blogspot.com/-ZRt41eX9fdk/VA7mAjFYt4I/AAAAAAAAmJc/yDevfyVymGc/s800/money_stock.png"),
-    ETFBonds: new GameItem("ETF Bonds", 300000, Infinity, 0, 0.0007, "https://1.bp.blogspot.com/-SlXHptXp-Hg/U8Xkf0VeAVI/AAAAAAAAiyA/n9d4fdHDmJk/s800/money_saiken.png"),
-    LemonadeStand: new GameItem("Lemonade Stand", 30000, 1000, 0, 30, "https://1.bp.blogspot.com/-tzP9gGYpFP8/XVjgHkZ40UI/AAAAAAABUMU/zQeTzUi4MjMRSXxZBI3cOqDYXwiAQhe1wCLcBGAs/s1600/drink_lemonade.png"),
-    IceCreamTruck: new GameItem("Ice Cream Truck", 100000, 500, 0, 120, "https://2.bp.blogspot.com/-IDJ-PAml6xI/UvTd5BRmybI/AAAAAAAAdf8/qkKtOM235yw/s800/job_icecream_ya.png"),
-    House: new GameItem("House", 20000000, 100, 0, 32000, "https://cdn.pixabay.com/photo/2016/11/18/17/46/house-1836070_960_720.jpg"),
-    TownHouse: new GameItem("Town House", 40000000, 100, 0, 64000, "https://cdn.pixabay.com/photo/2014/07/10/17/18/large-home-389271_960_720.jpg"),
-    Mansion: new GameItem("Mansion", 250000000, 20, 0, 50000, "https://cdn.pixabay.com/photo/2018/05/26/14/46/manor-house-3431460_960_720.jpg"),
-    IndustrialSpace: new GameItem("Industrial Space", 1000000000, 10, 0, 2200000, "https://cdn.pixabay.com/photo/2018/04/05/20/14/travel-3294009_960_720.jpg"),
-    HotelSkyscraper: new GameItem("Hotel Skyscraper", 10000000000, 5, 0, 25000000, "https://cdn.pixabay.com/photo/2012/02/21/07/27/al-abrar-mecca-15081_960_720.jpg"),
-    BulletSpeedSkyRailway: new GameItem("Bullet-Speed Sky Railway", 10000000000000, 1, 0, 30000000000, "https://cdn.pixabay.com/photo/2018/11/30/03/35/bullet-train-3846965_960_720.jpg")
-}
-
-
-// itemsに変更を加えるための関数
-function changeItem(item, addNumber, player){
-    if(item.price*addNumber > player.assets){
-        addNumber = Math.floor((player.assets/item.price));
-    }
-    if(item.ownedAmount + addNumber >= item.max){
-        let cost = item.price * item.max - item.ownedAmount;
-        item.ownedAmount = item.max;
-        return cost;
-    }
-    else{
-        let cost = item.price * addNumber;
-        item.ownedAmount = item.ownedAmount+addNumber;
-        return cost;
-    }
-}
-
-let display = [
-    [items.FlipMachine, items.ETFStock, items.ETFBonds],
-    [items.LemonadeStand, items.IceCreamTruck, items.House],
-    [items.TownHouse, items.Mansion, items.IndustrialSpace],
-    [items.HotelSkyscraper, items.BulletSpeedSkyRailway]
-]
-
-// game画面の作成をしなければならない
-function initializedPlayerStatus(){
-    let name = config.name;
-    let status = new Player(
-        name.value,
+// 最初にgameを開始するための関数
+function playStart(){
+    config["player"] = new Player(
+        config.name.value,
         20,
         1,
         50000,
     );
-    
     config.initialPage.classList.add("d-none");
-    config.gamePage.append(createSecondPage(status));
-    timeElapse(status);
+    config.gamePage.append(createPlayPage());
+    timeElapse();
+    // return player
 }
 
-function timeElapse(player){
+// 時間経過による変化を起こすための関数
+function timeElapse(){
     setInterval(function(){
-        player.elapseTime += 1;
-        player.age = Math.floor(20 + player.elapseTime / 365);
-        addAssets(player);
-        updateDisplayedStatus(player);
+        config.player.elapseTime += 1;
+        config.player.age = Math.floor(20 + config.player.elapseTime / 365);
+        config.player.addCash();
+        updateDisplayedStatus();
     }, 1000)
 }
 
-function addAssets(player){
-    let lemonade = items.LemonadeStand.ownedAmount * items.LemonadeStand.effect;
-    let ice = items.IceCreamTruck.ownedAmount * items.IceCreamTruck.effect;
-    let house = items.House.ownedAmount * items.House.effect;
-    let town = items.TownHouse.ownedAmount * items.TownHouse.effect;
-    let mansion = items.Mansion.ownedAmount * items.Mansion.effect;
-    let industrial = items.IndustrialSpace.ownedAmount * items.IndustrialSpace.effect;
-    let hotel = items.HotelSkyscraper.ownedAmount * items.HotelSkyscraper.effect;
-    let railway = items.BulletSpeedSkyRailway.ownedAmount * items.BulletSpeedSkyRailway.effect;
-    let bonds = Math.floor(items.ETFBonds.ownedAmount * items.ETFBonds.effect);
-    let stocks = Math.floor(items.ETFStock.ownedAmount * items.ETFStock.effect);
-
-    player.assets += lemonade + ice + house + town + mansion + industrial + hotel + railway + bonds + stocks;
+// 画面に表示されているプレイヤーステイタスを更新する関数
+function updateDisplayedStatus(){
+    // config.gamePage.querySelector(".name").innerHTML = player.name;
+    config.gamePage.querySelector(".age").innerHTML = config.player.age.toLocaleString() + " yrs ord";
+    config.gamePage.querySelector(".time").innerHTML = config.player.elapseTime.toLocaleString() + " days";
+    config.gamePage.querySelector(".cash").innerHTML = "¥" + config.player.cash.toLocaleString();
 }
 
-function updateDisplayedStatus(player){
-    config.gamePage.querySelector(".age").innerHTML = player.age.toLocaleString() + " yrs ord";
-    config.gamePage.querySelector(".time").innerHTML = player.elapseTime.toLocaleString() + " days";
-    config.gamePage.querySelector(".assets").innerHTML = "¥" + player.assets.toLocaleString();
-}
+// gameのplayページを作る関数
+function createPlayPage(){
+    // gameページのリセット
+    config.initialPage.classList.add("d-none");
+    config.gamePage.classList.remove(...config.gamePage.classList);
 
-function createSecondPage(player){
+    // gameページの初期設定
     config.gamePage.classList.add("col-12", "p-4", "h-100", "d-flex");
     let container = document.createElement("div");
     container.classList.add("col-12", "d-flex", "h-100");
 
+    // gameページ本文
     container.innerHTML =
     `
         <!-- 左側 -->
@@ -139,23 +130,23 @@ function createSecondPage(player){
                 <p class="rem2">Burgers</p>
                 <p class="rem1p5 burger-num">1</p>
             </div>
-            <img id="burger" src="https://2.bp.blogspot.com/-ydmVz8cQgiw/WGnPS4aBHVI/AAAAAAABA3M/baZ-lRZ1ViIRIfaQx1sjdSLgXPPZTGZKwCLcB/s800/hamburger_blt_burger.png" class="img-size m-4 pb-5 burger">
+            <img id="burger" src="/img/burger.png" class="img-size m-4 pb-5 burger">
         </div>
 
         <!-- 右側 -->
         <div class="col-6 text-white h-100 pl-3">
             <div class="rem1p3 bg-dark col-12 text-center p-1 mb-3 d-flex flex-wrap">
                 <div class="col-6 p-1 my-1">
-                    <p class="bg-secondary p-2 name">${player.name}</p>
+                    <p class="bg-secondary p-2 name">${config.player.name}</p>
                 </div>
                 <div class="col-6 p-1 my-1">
-                    <p class="bg-secondary p-2 age">${player.age} yrs ord</p>
+                    <p class="bg-secondary p-2 age">${config.player.age} yrs ord</p>
                 </div>
                 <div class="col-6 p-1 my-1">
-                    <p class="bg-secondary p-2 time">${player.elapseTime} days</p>
+                    <p class="bg-secondary p-2 time">${config.player.elapseTime} days</p>
                 </div>
                 <div class="col-6 p-1 my-1">
-                    <p class="bg-secondary p-2 assets">¥${player.assets}</p>
+                    <p class="bg-secondary p-2 cash">¥${config.player.cash}</p>
                 </div>
             </div>
 
@@ -165,99 +156,98 @@ function createSecondPage(player){
 
             <!-- save関連 -->
             <div class="mt-2 pt-2 col-12 d-flex justify-content-end">
-                <div class="mr-3 save-box"></div>
-                <div class="ml-3 save-box"></div>
+                <div class="mr-3 load-box d-flex align-items-center justify-content-center">
+                    <i class="fa-solid fa-arrow-rotate-right fa-4x"></i>
+                </div>
+                <div class="ml-3 save-box d-flex align-items-center justify-content-center">
+                    <i class="fa-regular fa-floppy-disk fa-4x"></i>
+                </div>
             </div>
         </div>
     `
 
+    // 左中央のパネル作る
     const center = container.querySelector(".center-box");
     center.append(createDisplay(0));
 
+    // バーガーにクリックで稼ぐ機能を追加
     const burger = container.querySelector(".burger");
-
     burger.addEventListener("click", function(){
-        player.assets += items.FlipMachine.ownedAmount * items.FlipMachine.effect;
-        updateDisplayedStatus(player);
+        config.player.cash += config.player.assets[0].ownedAmount * config.player.assets[0].effect;
+        updateDisplayedStatus();
     })
 
-    const displayBox = container.querySelector(".dis");
-    const selectList = container.querySelectorAll(".select-box");
-    for(let i = 0; i < selectList.length; i++){
-        let dotNum = container.querySelector(".is-active").innerHTML;
-        selectList[i].addEventListener("click", function(){
-            displayBox.classList.add("d-none");
-            displayBox.classList.remove("d-flex");
-            center.append(createPurchase(parseInt(dotNum), i, player));
+    //ドットナビゲーションの現在の場所（何ページ目にいるか）
+    let dotNum = container.querySelector(".is-active").innerHTML;
 
+    //セレクタの機能追加
+    selectWork(0, center);
+
+    let dotList = container.querySelectorAll(".dot");
+    for(let i = 0; i < dotList.length; i++){
+        dotList[i].addEventListener("click", function(){
+            changeCenterPanel(i);
         })
     }
 
+    let load = container.querySelector(".load-box");
+    let save = container.querySelector(".save-box");
+    //TODO:
+    load.addEventListener("click", function(){
+        if(localStorage.getItem("data") === null){
+            alert("保存されていません")
+            return
+        }
+        let json_data = localStorage.getItem("data");
+        let obj = JSON.parse(json_data);
+        config.player.name = obj.name;
+        config.player.assets = obj.assets;
+        config.player.age = obj.age;
+        config.player.cash = obj.cash;
+        config.player.elapseTime = obj.elapseTime;
+        alert("ロードしました");
+    })
 
-    return container;
-}
-
-
-// 使われてない
-// function effectDisplay(container){
-//     const selectList = container.querySelectorAll(".select-box");
-//     for(let i = 0; i < selectList.length; i++){
-//         let dotNum = container.querySelector(".is-active").innerHTML;
-//         selectList[i].addEventListener("click", function(){
-//             container.classList.add("d-none");
-//             container.classList.remove("d-flex");
-//             center.append(createPurchase(parseInt(dotNum), i));
-//         })
-//     }
-// }
-
-function createDisplay(page){
-    let container = document.createElement("div");
-    container.classList.add("w-100", "d-flex", "justify-content-center", "align-items-center", "flex-column", "h-100", "dis");
-    let selectOne = createSelectBox(page,0);
-    let selectTwo = createSelectBox(page, 1);
-    let selectThree;
-    if(page < 3) selectThree = createSelectBox(page, 2);
-
-    container.append(selectOne, selectTwo, selectThree);
-    container.innerHTML +=
-    `
-        <!-- ドットナビゲーション -->
-        <ul class="mt-2 mb-0 pb-0">
-            <li><button class="dot">0</button></li>
-            <li><button class="dot">1</button></li>
-            <li><button class="dot">2</button></li>
-            <li><button class="dot">3</button></li>
-        </ul>
-    `
-    const dotList = container.querySelectorAll(".dot");
-    dotList[page].classList.add("is-active");
-
-    selectOne.addEventListener("click", function(){
-        changeCenterPanel();
-        
+    save.addEventListener("click", function(){
+        let json_data = JSON.stringify(config.player);
+        localStorage.setItem("data", json_data);
+        alert("保存しました");
+        json_data = "";
     })
 
     return container;
 }
 
-function changeCenterPanel(player){
-    const center = config.gamePage.querySelector(".center-box");
-    center.querySelector(".dis").innerHTML = "";
-    let page = config.gamePage.querySelector(".is-active").value;
-    center.append(createSelectBox(parseInt(page), player));
+// 左中央の箱全体を作る関数
+function createDisplay(page){
+    let container = document.createElement("div");
+    container.classList.add("w-100", "d-flex", "justify-content-center", "align-items-center", "flex-column", "h-100", "dis");
+    let start = page*3;
+    let end = (page+1)*3;
+    // 選択できるアイテムのセレクトを縦に三つ並べる処理
+    for(let i = start; i < end && i < config.player.assets.length; i++){
+        container.append(createSelectBox(i));
+    }
+
+    //ドットナビゲーション
+    container.innerHTML += config.dot;
+
+    const dotList = container.querySelectorAll(".dot");
+    dotList[page].classList.add("is-active");
+
+    return container;
 }
 
-function createSelectBox(page, index){
+// 左中央の個別の選択画面を作る関数
+function createSelectBox(index){
     // 各アイテムの箱を作るための関数
-    const item = display[page][index];
-    let unit = "sec";
-    if(page == 0 && index == 0) unit = "click";
-    let addNumber = item.effect;
-    if(page == 0 && (index == 1 || index == 2)) addNumber = item.effect * item.price;
+    let item = config.player.assets[index]
+    let unit = index == 0?"click": "sec";
+    let addEffect = item.effect;
+    if(index == 1 || index == 2) addEffect = item.effect*item.price;
     let container = document.createElement("div");
+    container.classList.add("h-30", "mb-2", "py-1", "px-0", "w-100", "bg-secondary", "d-flex", "select-box")
 
-    container.classList.add("h-30", "mb-2", "py-1", "px-0", "w-100", "bg-secondary", "d-flex", "select-box");
     container.innerHTML +=
     `
         <img src="${item.imgUrl}" class="pl-0 ml-1 col-3 img">
@@ -265,7 +255,7 @@ function createSelectBox(page, index){
             <h3 class="col-12 text-white">${item.name}</h3>
             <div class="w-100 d-flex justify-content-between px-0">
                 <p class="rem1p02 text-white col-6">¥${item.price.toLocaleString()}</p>
-                <p class="pl-0 text-center rem1p02 text-green col-6">+¥${addNumber.toLocaleString()} / ${unit}</p>
+                <p class="pl-0 text-center rem1p02 text-green col-6">+¥${addEffect.toLocaleString()} / ${unit}</p>
             </div>
         </div>
         <div class="col-2 text-center text-white d-flex align-items-center justify-content-center">
@@ -275,13 +265,43 @@ function createSelectBox(page, index){
     return container;
 }
 
+// 左真ん中のパネルをドットナビゲーションに従って変更する関数
+function changeCenterPanel(page){
+    const center = config.gamePage.querySelector(".dis");
+    center.innerHTML = "";
+    let start = page*3;
+    let end = (page+1)*3;
+    for(let i = start; i < end && i < config.player.assets.length; i++){
+        center.append(createSelectBox(i));
+    }
 
-function createPurchase(page, index, player){
-    const item = display[page][index];
+    //ドットナビゲーション
+    center.innerHTML += config.dot;
+
+    const dotList = center.querySelectorAll(".dot");
+    dotList[page].classList.add("is-active");
+
+    for(let i = 0; i < dotList.length; i++){
+        dotList[i].addEventListener("click", function(){
+            changeCenterPanel(i);
+        })
+    }
+
+    //セレクタの機能追加
+    selectWork(page, config.gamePage.querySelector(".center-box"));
+}
+
+// 購入画面を作る関数
+function createPurchase(index){
+    // 購入するアイテムの格納
+    const item = config.player.assets[index];
+    //購入項目の単位
     let unit = "second";
-    if(page == 0 && index == 0) unit = "click";
-    let addNumber = item.effect;
-    if(page == 0 && (index == 1 || index == 2)) addNumber = item.effect * item.price;
+    if(index == 0) unit = "click";
+
+    //アイテムの効果を格納
+    let addNumber = item.effect;//effectが存在しないらしいは？
+    if(index == 1 || index == 2) addNumber = item.effect * item.price;
 
 
     let container = document.createElement("div");
@@ -300,9 +320,9 @@ function createPurchase(page, index, player){
         <div class="col-12 text-white mt-3 h-30">
             <h3 class="col-12">How Many would you like to purchase?</h3>
             <div class="col-12">
-                <input type="number" class="col-12 form-control text-right quant" placeholder="0">
+                <input type="number" class="col-12 form-control text-right quant" placeholder="1" value="1" min="1">
             </div>
-            <p class="text-right rem1p3 mt-2 mx-3">Total : ¥${item.price.toLocaleString()}</p>
+            <p class="text-right rem1p3 mt-2 mx-3 total">Total : ¥${item.price.toLocaleString()}</p>
         </div>
         <div class="col-12 d-flex justify-content-between align-items-center h-30 pb-1">
             <div class="col-6">
@@ -313,36 +333,123 @@ function createPurchase(page, index, player){
             </div>
         </div>
     `
-    let displayWindow = config.gamePage.querySelector(".dis");
+
+    let page = 0;
+    //pageを求める処理
+    for (let i = 1; i <= 4; i++){
+        if (index < i * 3){
+            page = i-1;
+            break;
+        }
+    }
+    //戻るボタンの効果作成 何もせずに戻る
     container.querySelector(".back-btn").addEventListener("click", function(){
-        returnDis(container, displayWindow);
-    })
-    container.querySelector(".pur-btn").addEventListener("click", function(){
-        purchaseItem(item, container, displayWindow, player);
+        purchaseAndBackBtn(page);
     })
 
+    //購入ボタン 入力した数値を元に購入処理が行われる
+    container.querySelector(".pur-btn").addEventListener("click", function(){
+        purchaseItem(item, page);
+    })
     return container;
 }
 
-// <input type="number" class="col-12 form-control text-right quant" placeholder="5" value="0">
+//戻るボタンの動作
+function purchaseAndBackBtn(page){
+    let center = config.gamePage.querySelector(".center-box");
+    //購入画面の消去
+    center.innerHTML = "";
 
-function returnDis(curr, backPage){
-    displayNone(curr);
-    displayBlock(backPage);
-    curr.innerHTML = ""
-    backPage.classList.add("d-flex");
+    //選択画面のappend
+    center.append(createDisplay(page))
+
+    changeCenterPanel(page);
+
+    //セレクタの機能追加
+    selectWork(page, center);
 }
 
-function purchaseItem(item, curr, backPage, player){
-    let quantity = parseInt(curr.querySelector(".quant").value);
-    cost = changeItem(item, quantity, player);
-    player.assets -= cost;
-    returnDis(curr, backPage);
+
+//購入ボタンの動作
+function purchaseItem(item, page){
+    let quantity = parseInt(config.gamePage.querySelector(".quant").value);
+
+    //現在のcashと比較して購入可能かを判定する、そのうえで不可能ならばポップアップで警告する
+    if(canBuy(item, quantity) == false){
+        alert("cashが不足しています。購入個数を入れなおしてください。");
+        return;
+    }
+
+    changeItem(item, quantity);
+    purchaseAndBackBtn(page);
+    if (item.name == "Flip machine"){
+        config.gamePage.querySelector(".burger-num").innerHTML = item.ownedAmount
+    }
 }
 
+//現在のcashと購入品×一つ当たりのcostを比較して購入できるか返す
+function canBuy(item, quantity){
+    if (calculator(item, quantity) > config.player.cash) return false;
+    return true;
+}
 
+//アイテムの所持数を変更する
+function changeItem(item, addNumber){
+    //購入する商品の値段が現在所持している現金より多いかの比較多い場合は購入個数が減る
+    if(calculator(item, addNumber) > config.player.cash){
+        //stockだけは計算が異なる
+        if (item.name == "ETF Stock"){
+            for(let i = addNumber; i >= 0; i--){
+                if (calculator(item, i) <= config.player.cash){
+                    addNumber = i;
+                    break;
+                }
+            }
+        }
+        else addNumber = Math.floor((config.player.cash/item.price));
+    }
 
-// valueが変化しない原因を探る
-// 原因はおそらくpurchase containerが消えずに何個も重なっているから
-// だから最初のコンテナのvalueが参照され続ける
-// 購入ページを離れるときにそのページのコードを消して一つ前のページを生成し手切り替える野が良いと思われる
+    //アイテムの所持上限に達しているときの処理
+    let cost = 0;
+    if(item.ownedAmount + addNumber >= item.max){
+        cost = calculator(item, item.max - item.ownedAmount);
+        item.ownedAmount = item.max;
+    }
+    //所持上限に達していないときの処理
+    else{
+        cost = calculator(item, addNumber);
+        item.ownedAmount = item.ownedAmount+addNumber;
+    }
+    config.player.cash -= cost;
+}
+
+//セレクタの機能追加をする関数
+function selectWork(page, parent){
+    const selectList = parent.querySelectorAll(".select-box");
+
+    for(let i = 0; i < selectList.length; i++){
+        selectList[i].addEventListener("click", function(){
+            parent.innerHTML = "";
+            parent.append(createPurchase(i+page*3));
+            let quant = parent.querySelector(".quant");
+            let total = parent.querySelector(".total");
+            quant.addEventListener("change", function(){
+                total.innerHTML = `Total : ¥${(calculator(config.player.assets[i+page*3], quant.value)).toLocaleString()}`
+            })
+        })
+    }
+}
+
+function calculator(item, quantity){
+    let res = 0;
+    if (item.name == "ETF Stock"){
+        res += item.price;
+        res += item.price*Math.pow(1.1, quantity-1);
+    }
+    else{
+        res = item.price*quantity;
+    }
+    return res;
+}
+
+//TODO:残るはセーブの箱にアイコンを入れるだけ

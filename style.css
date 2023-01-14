@@ -67,6 +67,13 @@ p {
     border: solid 2px white;
 }
 
+.load-box {
+    height: 80px;
+    width: 90px;
+    border: solid 2px white;
+}
+
+
 /* effect */
 .hover {
     cursor: pointer;
