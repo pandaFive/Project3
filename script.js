@@ -86,6 +86,9 @@ function playStart(){
         1,
         50000,
     );
+    if (config.player.name == ""){
+        config.player.name = "steven"
+    }
     config.initialPage.classList.add("d-none");
     config.gamePage.append(createPlayPage());
     timeElapse();
