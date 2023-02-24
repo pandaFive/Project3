@@ -38,17 +38,17 @@ class Player {
         this.cash = cash
 
         this.assets = [
-            new GameItem("Flip machine", 15000, 500, 1, 25, "/img/burger.png"),
-            new GameItem("ETF Stock", 300000, Infinity, 0, 0.001, "/img/stock.png"),
-            new GameItem("ETF Bonds", 300000, Infinity, 0, 0.0007, "/img/bonds.png"),
-            new GameItem("Lemonade Stand", 30000, 1000, 0, 30, "/img/lemonade.png"),
-            new GameItem("Ice Cream Truck", 100000, 500, 0, 120, "/img/icecream.png"),
-            new GameItem("House", 20000000, 100, 0, 32000, "/img/house.jpg"),
-            new GameItem("Town House", 40000000, 100, 0, 64000, "/img/townHouse.jpg"),
-            new GameItem("Mansion", 250000000, 20, 0, 50000, "/img/mansion.jpg"),
-            new GameItem("Industrial Space", 1000000000, 10, 0, 2200000, "/img/industrialSpace.jpg"),
-            new GameItem("Hotel Skyscraper", 10000000000, 5, 0, 25000000, "/img/hotel.jpg"),
-            new GameItem("Bullet-Speed Sky Railway", 10000000000000, 1, 0, 30000000000, "/img/bullet-train-railway.jpg")
+            new GameItem("Flip machine", 15000, 500, 1, 25, "https://github.com/pandaFive/Project3/blob/main/img/burger.png?raw=true"),
+            new GameItem("ETF Stock", 300000, Infinity, 0, 0.001, "https://github.com/pandaFive/Project3/blob/main/img/stock.png?raw=true"),
+            new GameItem("ETF Bonds", 300000, Infinity, 0, 0.0007, "https://github.com/pandaFive/Project3/blob/main/img/bonds.png?raw=true"),
+            new GameItem("Lemonade Stand", 30000, 1000, 0, 30, "https://github.com/pandaFive/Project3/blob/main/img/lemonade.png?raw=true"),
+            new GameItem("Ice Cream Truck", 100000, 500, 0, 120, "https://github.com/pandaFive/Project3/blob/main/img/icecream.png?raw=true"),
+            new GameItem("House", 20000000, 100, 0, 32000, "https://github.com/pandaFive/Project3/blob/main/img/house.jpg?raw=true"),
+            new GameItem("Town House", 40000000, 100, 0, 64000, "https://github.com/pandaFive/Project3/blob/main/img/townHouse.jpg?raw=true"),
+            new GameItem("Mansion", 250000000, 20, 0, 50000, "https://github.com/pandaFive/Project3/blob/main/img/mansion.jpg?raw=true"),
+            new GameItem("Industrial Space", 1000000000, 10, 0, 2200000, "https://github.com/pandaFive/Project3/blob/main/img/industrialSpace.jpg?raw=true"),
+            new GameItem("Hotel Skyscraper", 10000000000, 5, 0, 25000000, "https://github.com/pandaFive/Project3/blob/main/img/hotel.jpg?raw=true"),
+            new GameItem("Bullet-Speed Sky Railway", 10000000000000, 1, 0, 30000000000, "https://github.com/pandaFive/Project3/blob/main/img/bullet-train-railway.jpg?raw=true")
         ]
     }
 
@@ -123,7 +123,7 @@ function createPlayPage(){
                 <p class="rem2">Burgers</p>
                 <p class="rem1p5 burger-num">1</p>
             </div>
-            <img id="burger" src="/img/burger.png" class="img-size m-4 pb-5 burger">
+            <img id="burger" src="config.player.assets[0].imgUrl" class="img-size m-4 pb-5 burger">
         </div>
 
         <!-- 右側 -->
