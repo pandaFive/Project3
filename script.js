@@ -19,15 +19,6 @@ document.getElementById("startBtn").addEventListener("click", function(){
     playStart();
 })
 
-function displayNone(ele){
-    ele.classList.remove("d-block", "d-flex");
-    ele.classList.add("d-none");
-}
-
-function displayBlock(ele){
-    ele.classList.remove("d-none");
-}
-
 class GameItem {
     constructor(name, price, max, ownedAmount, effect, imgUrl){
         this.name = name;
@@ -40,7 +31,7 @@ class GameItem {
 }
 
 class Player {
-    constructor(name, age, elapseTime, cash, assets = []){
+    constructor(name, age, elapseTime, cash){
         this.name = name;
         this.age = age;
         this.elapseTime = elapseTime;
@@ -59,7 +50,6 @@ class Player {
             new GameItem("Hotel Skyscraper", 10000000000, 5, 0, 25000000, "/img/hotel.jpg"),
             new GameItem("Bullet-Speed Sky Railway", 10000000000000, 1, 0, 30000000000, "/img/bullet-train-railway.jpg")
         ]
-
     }
 
     addCash(){
@@ -95,7 +85,7 @@ function playStart(){
     // return player
 }
 
-// 時間経過による変化を起こすための関数
+// 時間経過による変化を起こすための関数経過時間の追加それによるcashの増加及び年齢の増加
 function timeElapse(){
     setInterval(function(){
         config.player.elapseTime += 1;
@@ -169,7 +159,7 @@ function createPlayPage(){
         </div>
     `
 
-    // 左中央のパネル作る
+    // 右中央のパネル作る
     const center = container.querySelector(".center-box");
     center.append(createDisplay(0));
 
@@ -183,9 +173,10 @@ function createPlayPage(){
     //ドットナビゲーションの現在の場所（何ページ目にいるか）
     let dotNum = container.querySelector(".is-active").innerHTML;
 
-    //セレクタの機能追加
+    //セレクタの機能追加クリックにより購入ページに飛ぶ
     selectWork(0, center);
 
+    // ドットリストをクリックするとセレクタが変更される
     let dotList = container.querySelectorAll(".dot");
     for(let i = 0; i < dotList.length; i++){
         dotList[i].addEventListener("click", function(){
@@ -195,7 +186,6 @@ function createPlayPage(){
 
     let load = container.querySelector(".load-box");
     let save = container.querySelector(".save-box");
-    //TODO:
     load.addEventListener("click", function(){
         if(localStorage.getItem("data") === null){
             alert("保存されていません")
@@ -221,7 +211,7 @@ function createPlayPage(){
     return container;
 }
 
-// 左中央の箱全体を作る関数
+// 右中央の箱全体を作る関数
 function createDisplay(page){
     let container = document.createElement("div");
     container.classList.add("w-100", "d-flex", "justify-content-center", "align-items-center", "flex-column", "h-100", "dis");
@@ -241,7 +231,7 @@ function createDisplay(page){
     return container;
 }
 
-// 左中央の個別の選択画面を作る関数
+// 右中央の個別の選択画面を作る関数
 function createSelectBox(index){
     // 各アイテムの箱を作るための関数
     let item = config.player.assets[index]
@@ -268,7 +258,7 @@ function createSelectBox(index){
     return container;
 }
 
-// 左真ん中のパネルをドットナビゲーションに従って変更する関数
+// 右真ん中のパネルをドットナビゲーションに従って変更する関数
 function changeCenterPanel(page){
     const center = config.gamePage.querySelector(".dis");
     center.innerHTML = "";
@@ -368,7 +358,7 @@ function purchaseAndBackBtn(page){
 
     changeCenterPanel(page);
 
-    //セレクタの機能追加
+    //選択画面の機能追加
     selectWork(page, center);
 }
 
@@ -454,5 +444,3 @@ function calculator(item, quantity){
     }
     return res;
 }
-
-//TODO:残るはセーブの箱にアイコンを入れるだけ
