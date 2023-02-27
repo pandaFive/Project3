@@ -123,7 +123,7 @@ function createPlayPage(){
                 <p class="rem2">Burgers</p>
                 <p class="rem1p5 burger-num">1</p>
             </div>
-            <img id="burger" src="config.player.assets[0].imgUrl" class="img-size m-4 pb-5 burger">
+            <img id="burger" src="https://github.com/pandaFive/Project3/blob/main/img/burger.png?raw=true" class="img-size m-4 pb-5 burger">
         </div>
 
         <!-- 右側 -->
